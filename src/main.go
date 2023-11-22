@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+    "github.com/joho/godotenv"
 )
 
 // tracks if AI has finished with its response
@@ -17,9 +18,19 @@ var isFinished bool = false;
 
 func main() {
 
+    // get environment variables
+    err := godotenv.Load(os.Getenv("HOME") + "/.config/ask-jef/ask.env")
+    if err != nil {
+        fmt.Printf(Red)
+        log.Printf("Could not load environment: %s", err)
+        fmt.Printf(Reset)
+        return;
+    }
+
+
     // get user input
+    var model string = "";
     var input string = "";
-    var model string = "luna-ai-llama2"
 
     if (len(os.Args) == 1) {
         fmt.Println(B_Purple + "What would you like to ask Jef?" + Reset);
@@ -44,14 +55,33 @@ func main() {
             input += " " + buf;
         }
     } else {
-        for index, value := range os.Args {
-            if value != "-m" {
-                input += " " + value;
+        for i := 1; i < len(os.Args); i++ {
+            value := os.Args[i]
+
+            if value == "-m" {
+                model = os.Args[i+1]
+                i+=1;
+                continue;
             } else {
-                model = os.Args[index+1]
-                index++;
+                input += value + " ";
             }
         }
+        fmt.Printf("\n")
+    }
+
+    if model == "" {
+        model = os.Getenv("MODEL")
+    }
+
+    if model == "" {
+        fmt.Printf("%s", B_Purple + "Enter model name (should be the same from LocalAI/models/ direcotry): " + Reset)
+        fmt.Scanf("%s", &model)
+    }
+
+    updateModel(model);
+
+    if input == "" {
+        return
     }
 
     // generate AI response

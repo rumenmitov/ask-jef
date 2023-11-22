@@ -20,7 +20,8 @@ cd ask-jef
 ```
 2. Run the installation script:
 ```sh
-go build -o /usr/local/bin/ask src/*.go
+mkdir -p $HOME/.config/ask-jef
+make install
 ```
 ## Usage
 There two ways of running the program. Either:  
@@ -32,9 +33,8 @@ Or (if you want to use multiple lines for your query):
 ask
 ...
 <enter>
-<enter>
 ```
-On the second _enter_ click your multi-line query will be sent to Jef, who will
+On the _enter_ after an empty line, your multi-line query will be sent to Jef, who will
 return with a response shortly 😁.    
 
 **NOTE:** Form multi-line queries quotation marks (_""_) are not needed!  
@@ -43,6 +43,4 @@ You may also specify a desired model by typing:
 ```sh
 ask -m <model_name> "your query here"
 ```
-  
-**NOTE:** The default model is _luna-ai-llama2_.  
-**NOTE:** The modeel name should correspond to the model in your _LocalAI/models/_ directory.  
+**NOTE:** The model name should correspond to the model in your _LocalAI/models/_ directory.  
