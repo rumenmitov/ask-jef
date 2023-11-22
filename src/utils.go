@@ -10,7 +10,7 @@ import (
     "strings"
 )
 
-func multiLineQuery(input *string, hasInput *bool) {
+func multiLineQuery(input *string) {
     fmt.Println(B_Purple + "What would you like to ask Jef?" + Reset);
     for {
         fmt.Printf("%s", Blue + "» " + I_Blue)
@@ -32,24 +32,8 @@ func multiLineQuery(input *string, hasInput *bool) {
         buf = strings.TrimSuffix(buf, "\n")
 
         if (buf != "") { 
-            *hasInput = true;
             *input += " " + buf;
         }
-    }
-}
-
-func animationLoad() {
-
-    for !isFinished {
-        fmt.Printf("\r%s", "Jef is thinking   ")
-        time.Sleep(1 * time.Second)
-        fmt.Printf("\r%s", "Jef is thinking.  ")
-        time.Sleep(1 * time.Second)
-        fmt.Printf("\r%s", "Jef is thinking.. ")
-        time.Sleep(1 * time.Second)
-        fmt.Printf("\r%s", "Jef is thinking...")
-        time.Sleep(1 * time.Second)
-        fmt.Printf("\r%s", "Jef is thinking   ")
     }
 }
 
@@ -65,4 +49,19 @@ func updateModel(model string) {
     defer fp.Close()
 
     io.WriteString(fp, "MODEL=" + model)
+}
+
+func animationLoad() {
+
+    for !isFinished {
+        fmt.Printf("\r%s", "Jef is thinking   ")
+        time.Sleep(1 * time.Second)
+        fmt.Printf("\r%s", "Jef is thinking.  ")
+        time.Sleep(1 * time.Second)
+        fmt.Printf("\r%s", "Jef is thinking.. ")
+        time.Sleep(1 * time.Second)
+        fmt.Printf("\r%s", "Jef is thinking...")
+        time.Sleep(1 * time.Second)
+        fmt.Printf("\r%s", "Jef is thinking   ")
+    }
 }

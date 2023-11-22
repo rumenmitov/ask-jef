@@ -1,5 +1,10 @@
 package main
 
+type UserFile struct {
+    name string
+    contents string
+}
+
 type Payload struct {
     Model string `json:"model"`
     Messages []Message `json:"messages"`

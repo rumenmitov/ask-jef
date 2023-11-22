@@ -11,12 +11,6 @@ import (
     "github.com/joho/godotenv"
 )
 
-// tracks if user has entered input
-var hasInput bool = false;
-
-// tracks if a file has been entered
-var hasFile bool = false;
-
 // tracks if AI has finished with its response
 var isFinished bool = false;
 
@@ -35,9 +29,10 @@ func main() {
     // get user input
     var model string = "";
     var input string = "";
+    var filesArr []UserFile;
 
     if (len(os.Args) == 1) {
-        multiLineQuery(&input, &hasInput)
+        multiLineQuery(&input)
     } else {
         for i := 1; i < len(os.Args); i++ {
             value := os.Args[i]
@@ -47,19 +42,22 @@ func main() {
                 i+=1;
                 continue;
             } else if value == "-f" {
-                file_content, err := os.ReadFile(os.Args[i+1])
+                f := UserFile { 
+                    name: os.Args[i+1], 
+                    contents: "",
+                };
+                contents, err := os.ReadFile(f.name);
                 if (err != nil) {
                     fmt.Printf(Red)
                     log.Printf("Error reading file: %s", err)
                     fmt.Printf(Reset)
                 }
-                input += "\n" + string(file_content) + "\n"
+                f.contents = string(contents);
+                filesArr = append(filesArr, f);
                 i++;
-                hasFile = true;
                 continue
             } else {
-                input += value + " ";
-                hasInput = true;
+                input += value;
             }
         }
         fmt.Printf("\n")
@@ -76,13 +74,14 @@ func main() {
 
     updateModel(model);
 
-    if input == "" && !hasFile {
-        return
+    if (len(filesArr) > 0) && (input == "") {
+        multiLineQuery(&input)
+        if input == "" { return }
     }
 
-    if hasFile && !hasInput {
-        multiLineQuery(&input, &hasInput)
-        if (!hasInput) { return }
+    for _, file := range filesArr {
+        input += "\nContents of file: " + file.name + "\n";
+        input += file.contents;
     }
 
     // generate AI response
