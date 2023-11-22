@@ -47,7 +47,7 @@ ask -m <model_name> "your query here"
 ```
 **NOTE:** The model name should correspond to the model in your _LocalAI/models/_ directory.  
   
-To enter the contents of a file type:  
+To enter the contents of a file you can type:  
 ```sh
 ask -f <file_1> -f <file_2> "your query here"
 ```
