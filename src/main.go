@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -9,9 +8,14 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
     "github.com/joho/godotenv"
 )
+
+// tracks if user has entered input
+var hasInput bool = false;
+
+// tracks if a file has been entered
+var hasFile bool = false;
 
 // tracks if AI has finished with its response
 var isFinished bool = false;
@@ -33,27 +37,7 @@ func main() {
     var input string = "";
 
     if (len(os.Args) == 1) {
-        fmt.Println(B_Purple + "What would you like to ask Jef?" + Reset);
-        for {
-            fmt.Printf("%s", Blue + "» " + I_Blue)
-            var buf string;
-
-            in := bufio.NewReader(os.Stdin)
-            buf, err := in.ReadString('\n')
-            if err != nil {
-                fmt.Printf(Red)
-                log.Printf("Could not get input: %s", err)
-                fmt.Printf(Reset)
-                return;
-            }
-
-            if buf == "\n" {
-                break;
-            }
-
-            buf = strings.TrimSuffix(buf, "\n")
-            input += " " + buf;
-        }
+        multiLineQuery(&input, &hasInput)
     } else {
         for i := 1; i < len(os.Args); i++ {
             value := os.Args[i]
@@ -62,8 +46,20 @@ func main() {
                 model = os.Args[i+1]
                 i+=1;
                 continue;
+            } else if value == "-f" {
+                file_content, err := os.ReadFile(os.Args[i+1])
+                if (err != nil) {
+                    fmt.Printf(Red)
+                    log.Printf("Error reading file: %s", err)
+                    fmt.Printf(Reset)
+                }
+                input += "\n" + string(file_content) + "\n"
+                i++;
+                hasFile = true;
+                continue
             } else {
                 input += value + " ";
+                hasInput = true;
             }
         }
         fmt.Printf("\n")
@@ -80,8 +76,13 @@ func main() {
 
     updateModel(model);
 
-    if input == "" {
+    if input == "" && !hasFile {
         return
+    }
+
+    if hasFile && !hasInput {
+        multiLineQuery(&input, &hasInput)
+        if (!hasInput) { return }
     }
 
     // generate AI response

@@ -15,13 +15,13 @@ Before you start make sure you have set up the following:
 - [LocalAI](https://localai.io/)
 - [Go](https://go.dev)
 ### Building
-1. Clone this repository and go into it:
+1. Clone this repository:
 ```sh
 git clone https://github.com/rumenmitov/ask-jef.git
-cd ask-jef
 ```
 2. Run the installation script:
 ```sh
+cd ask-jef
 mkdir -p $HOME/.config/ask-jef
 make install
 ```
@@ -46,3 +46,8 @@ You may also specify a desired model by typing:
 ask -m <model_name> "your query here"
 ```
 **NOTE:** The model name should correspond to the model in your _LocalAI/models/_ directory.  
+  
+To enter the contents of a file type:  
+```sh
+ask -f <file_name> "your query here"
+```
