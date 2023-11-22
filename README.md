@@ -49,5 +49,5 @@ ask -m <model_name> "your query here"
   
 To enter the contents of a file type:  
 ```sh
-ask -f <file_name> "your query here"
+ask -f <file_1> -f <file_2> "your query here"
 ```
