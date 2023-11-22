@@ -25,18 +25,24 @@ go build -o /usr/local/bin/ask src/*.go
 ## Usage
 There two ways of running the program. Either:  
 ```sh
-ask <your_query_here>
+ask "your query here"
 ```
-Or:  
+Or (if you want to use multiple lines for your query):  
 ```sh
 ask
-<your_query_here>
-<can_stretch_over>
-<multiple_lines>
+...
 <enter>
 <enter>
 ```
 On the second _enter_ click your multi-line query will be sent to Jef, who will
 return with a response shortly 😁.    
+
+**NOTE:** Form multi-line queries quotation marks (_""_) are not needed!  
   
-**NOTE:** Do not type in _""_ or _\\_ as support for them has not been added yet!
+You may also specify a desired model by typing:
+```sh
+ask -m <model_name> "your query here"
+```
+  
+**NOTE:** The default model is _luna-ai-llama2_.  
+**NOTE:** The modeel name should correspond to the model in your _LocalAI/models/_ directory.  

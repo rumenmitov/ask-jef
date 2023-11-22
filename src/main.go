@@ -19,6 +19,8 @@ func main() {
 
     // get user input
     var input string = "";
+    var model string = "luna-ai-llama2"
+
     if (len(os.Args) == 1) {
         fmt.Println(B_Purple + "What would you like to ask Jef?" + Reset);
         for {
@@ -42,8 +44,13 @@ func main() {
             input += " " + buf;
         }
     } else {
-        for _, value := range os.Args {
-            input += " " + value;
+        for index, value := range os.Args {
+            if value != "-m" {
+                input += " " + value;
+            } else {
+                model = os.Args[index+1]
+                index++;
+            }
         }
     }
 
@@ -52,9 +59,26 @@ func main() {
     fmt.Printf("\n%s", Reset)
 
 	url := "http://localhost:8080/v1/chat/completions"
-	payload := []byte(`{ "model": "luna-ai-llama2", "messages": [{"role": "user", "content": "` + input + `"}], "temperature": 0.9 }`)
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+    payload := Payload {
+        Model: model,
+        Messages: []Message{
+            {
+                Role: "user",
+                Content: input,
+            },
+        },
+        Temperature: 0.9,
+    };
+
+    payload_str, err := json.Marshal(payload)
+    if (err != nil) {
+        fmt.Printf(Red)
+        log.Printf("Error parsing user input to JSON: %s", err)
+        fmt.Printf(Reset)
+    }
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload_str))
 	if err != nil {
         fmt.Printf(Red)
         log.Printf("Error fetching request: %s", err)
