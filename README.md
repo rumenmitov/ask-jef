@@ -1,6 +1,7 @@
 # Ask Jef!
 > Your terminal assistant 😉
 ***
+![Example](https://github.com/rumenmitov/ask-jef/assets/108842741/606a45b6-557e-4259-8792-53e95cdecb74)
 ## Table of Contents
 1. [Installation](#installation)  
 1.1 [Prerequisites](#prerequisites)  
