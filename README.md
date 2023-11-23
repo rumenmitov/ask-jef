@@ -90,7 +90,7 @@ ask -mv <old_session_name> <new_session_name>
 ***
 ![GitHub stars](https://img.shields.io/github/stars/rumenmitov/ask-jef?style=social)  
   
-![created by Rumen Mitov](https://img.shields.io/badge/Created_by-Rumen_Mitov-blue?style=flat)  
+![Created by Rumen Mitov](https://img.shields.io/badge/Created_by-Rumen_Mitov-blue?style=flat)  
 
 ![License](https://img.shields.io/github/license/rumenmitov/ask-jef)
 
