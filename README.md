@@ -1,5 +1,7 @@
 # Ask Jef!
 > Your terminal assistant 😉  
+
+![GitHub stars](https://img.shields.io/github/stars/rumenmitov/ask-jef?style=social)
   
 ![Example](https://github.com/rumenmitov/ask-jef/assets/108842741/606a45b6-557e-4259-8792-53e95cdecb74)
 ***
