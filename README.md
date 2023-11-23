@@ -22,7 +22,6 @@ git clone https://github.com/rumenmitov/ask-jef.git
 2. Run the installation script:
 ```sh
 cd ask-jef
-mkdir -p $HOME/.config/ask-jef
 make install
 ```
 ## Usage
@@ -46,8 +45,16 @@ You may also specify a desired model by typing:
 ask -m <model_name> "your query here"
 ```
 **NOTE:** The model name should correspond to the model in your _LocalAI/models/_ directory.  
+**NOTE:** It is also possible to set the desired model in `$XDG_CONFIG_HOME/ask-jef/ask.env`.  
   
 To enter the contents of a file you can type:  
 ```sh
 ask -f <file_1> -f <file_2> "your query here"
 ```
+  
+Each response is saved in a unique text file (referred to as a _session_) in the `$XDG_CACHE_HOME` directory.  
+To save a response under a desired session name, please enter the command:
+```sh
+ask -s <session_name> "your query here"
+```
+**NOTE:** The above command could also be used to continue from where you left off in a previous session.

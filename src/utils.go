@@ -19,9 +19,7 @@ func multiLineQuery(input *string) {
         in := bufio.NewReader(os.Stdin)
         buf, err := in.ReadString('\n')
         if err != nil {
-            fmt.Printf(Red)
-            log.Printf("Could not get input: %s", err)
-            fmt.Printf(Reset)
+            log.Println(err)
             return;
         }
 
@@ -41,9 +39,7 @@ func updateModel(model string) {
 
     fp, err := os.Create(os.Getenv("HOME") + "/.config/ask-jef/ask.env")
     if err != nil {
-        fmt.Printf(Red)
-        log.Printf("Could not open .env file: %s", err)
-        fmt.Printf(Reset)
+        log.Println(err)
     }
 
     defer fp.Close()
@@ -54,14 +50,16 @@ func updateModel(model string) {
 func animationLoad() {
 
     for !isFinished {
+        fmt.Printf("%s", B_Purple)
         fmt.Printf("\r%s", "Jef is thinking   ")
-        time.Sleep(1 * time.Second)
+        time.Sleep(500 * time.Millisecond)
         fmt.Printf("\r%s", "Jef is thinking.  ")
-        time.Sleep(1 * time.Second)
+        time.Sleep(500 * time.Millisecond)
         fmt.Printf("\r%s", "Jef is thinking.. ")
-        time.Sleep(1 * time.Second)
+        time.Sleep(500 * time.Millisecond)
         fmt.Printf("\r%s", "Jef is thinking...")
-        time.Sleep(1 * time.Second)
+        time.Sleep(500 * time.Millisecond)
         fmt.Printf("\r%s", "Jef is thinking   ")
+        fmt.Printf("%s", Reset)
     }
 }

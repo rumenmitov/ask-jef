@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-    "log"
 	"io"
+	"log"
 	"net/http"
 	"os"
-    "github.com/joho/godotenv"
+	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 )
 
 // tracks if AI has finished with its response
@@ -19,49 +20,79 @@ func main() {
     // get environment variables
     err := godotenv.Load(os.Getenv("HOME") + "/.config/ask-jef/ask.env")
     if err != nil {
-        fmt.Printf(Red)
-        log.Printf("Could not load environment: %s", err)
-        fmt.Printf(Reset)
+        log.Println(err)
         return;
     }
 
 
     // get user input
+    session := Session {
+        AlreadyExists: false,
+        Id: uuid.NewString(),
+        Content: "",
+    }
     var model string = "";
     var input string = "";
     var filesArr []UserFile;
 
     if (len(os.Args) == 1) {
+        // case for no flags
         multiLineQuery(&input)
     } else {
         for i := 1; i < len(os.Args); i++ {
             value := os.Args[i]
 
             if value == "-m" {
+                // flag for setting the model
                 model = os.Args[i+1]
-                i+=1;
-                continue;
+                i++;
+
             } else if value == "-f" {
+                // flag for adding files
                 f := UserFile { 
-                    name: os.Args[i+1], 
-                    contents: "",
+                    Name: os.Args[i+1], 
+                    Contents: "",
                 };
-                contents, err := os.ReadFile(f.name);
+
+                contents, err := os.ReadFile(f.Name);
                 if (err != nil) {
-                    fmt.Printf(Red)
-                    log.Printf("Error reading file: %s", err)
-                    fmt.Printf(Reset)
+                    log.Println(err)
                 }
-                f.contents = string(contents);
+
+                f.Contents = string(contents);
                 filesArr = append(filesArr, f);
                 i++;
-                continue
+
+            } else if value == "-s" {
+                // flag for setting the session name
+                session.Id = os.Args[i+1];
+
+                session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + session.Id + ".txt"
+
+                _, err := os.Stat(session_file);
+                if os.IsExist(err) {
+                    session.AlreadyExists = true;
+
+                    contents, err := 
+                    os.ReadFile(session_file);
+                    if err != nil {
+                        log.Println(err)
+                    }
+
+                    session.Content = string(contents);
+                }
+
+                i++;
+
             } else {
+                // get input from argument
                 input += value;
             }
         }
         fmt.Printf("\n")
     }
+
+    // parse user input
 
     if model == "" {
         model = os.Getenv("MODEL")
@@ -74,14 +105,18 @@ func main() {
 
     updateModel(model);
 
-    if (len(filesArr) > 0) && (input == "") {
+    if (len(filesArr) == 0) && (input == "") {
         multiLineQuery(&input)
         if input == "" { return }
     }
 
+    if session.Content != "" {
+        input += "\nCosider the context:\n`" + session.Content + "`\nNow answer the following question:\n";
+    }
+
     for _, file := range filesArr {
-        input += "\nContents of file: " + file.name + "\n";
-        input += file.contents;
+        input += "\nContents of file: `" + file.Name + "`\n";
+        input += "`" + file.Contents + "`";
     }
 
     // generate AI response
@@ -103,16 +138,12 @@ func main() {
 
     payload_str, err := json.Marshal(payload)
     if (err != nil) {
-        fmt.Printf(Red)
-        log.Printf("Error parsing user input to JSON: %s", err)
-        fmt.Printf(Reset)
+        log.Println(err)
     }
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload_str))
 	if err != nil {
-        fmt.Printf(Red)
-        log.Printf("Error fetching request: %s", err)
-        fmt.Printf(Reset)
+        log.Println(err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -125,9 +156,7 @@ func main() {
     resp, err := client.Do(req)
     if err != nil {
         isFinished = true
-        fmt.Printf(Red)
-        log.Printf("Error sending request: %s", err)
-        fmt.Printf(Reset)
+        log.Println(err)
     }
     defer resp.Body.Close()
     isFinished = true
@@ -136,16 +165,38 @@ func main() {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-        fmt.Printf(Red)
-        log.Printf("Error reading response body: %s", err)
-        fmt.Printf(Reset)
+        log.Println(err)
 		return
 	}
 
-	// print result
+	// print result to stdout
     var v Data;
     json.Unmarshal([]byte(body), &v)
 
     fmt.Printf("%s", B_Cyan);
     fmt.Printf("\r%s", v.Choices[0].Message.Content + Reset)
+
+    // save result to session file
+    session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + session.Id + ".txt";
+
+    f_out, err := 
+        os.OpenFile(session_file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0644);
+    if err != nil {
+        log.Println(err)
+        return
+    }
+
+    defer f_out.Close()
+
+    if session.AlreadyExists {
+        _, err = f_out.WriteString("\n");
+        if err != nil {
+            log.Println(err)
+        }
+    }
+
+    _, err = f_out.WriteString(v.Choices[0].Message.Content)
+    if err != nil {
+        log.Println(err)
+    }
 }

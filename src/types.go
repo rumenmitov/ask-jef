@@ -1,8 +1,14 @@
 package main
 
+type Session struct {
+    AlreadyExists bool
+    Id string
+    Content string
+}
+
 type UserFile struct {
-    name string
-    contents string
+    Name string
+    Contents string
 }
 
 type Payload struct {
