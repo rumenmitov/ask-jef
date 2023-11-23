@@ -68,17 +68,17 @@ To print the results of a session:
 ```sh
 ask -ss <session_name>
 ```
-  
+    
 To delete a session:
 ```sh
 ask -r <session_name>
 ```
-
-***
-![GitHub stars](https://img.shields.io/github/stars/rumenmitov/ask-jef?style=social)
-  
-    
+     
 To rename a session:
 ```sh
 ask -mv <old_session_name> <new_session_name>
 ```
+  
+***
+![GitHub stars](https://img.shields.io/github/stars/rumenmitov/ask-jef?style=social)
+  
