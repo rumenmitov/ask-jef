@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+    "errors"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
@@ -67,14 +68,13 @@ func main() {
                 // flag for setting the session name
                 session.Id = os.Args[i+1];
 
-                session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + session.Id + ".txt"
+                session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + session.Id;
 
                 _, err := os.Stat(session_file);
-                if os.IsExist(err) {
+                if err == nil {
                     session.AlreadyExists = true;
 
-                    contents, err := 
-                    os.ReadFile(session_file);
+                    contents, err := os.ReadFile(session_file);
                     if err != nil {
                         log.Println(err)
                     }
@@ -83,6 +83,82 @@ func main() {
                 }
 
                 i++;
+
+            } else if value == "-ss" {
+                // flag for displaying the contents of a session
+                session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + os.Args[i+1];
+
+                _, err := os.Stat(session_file);
+                if err == nil {
+                    contents, err := os.ReadFile(session_file);
+                    if err != nil {
+                        log.Println(err)
+                    }
+
+                    fmt.Printf("\n%s\n", B_Cyan + string(contents) + Reset)
+                }
+
+                return;
+
+            } else if value == "-l" {
+                // flag for listing sessions
+                session_dir := os.Getenv("HOME") + "/.cache/ask-jef/";
+
+                dir, err := os.Open(session_dir)
+                if err != nil {
+                    log.Println(err)
+                }
+
+                files, err := dir.ReadDir(0)
+                if err != nil {
+                    log.Println(err)
+                }
+
+                fmt.Printf("\n%s", B_Purple + "Sessions:\n\n" + I_Cyan)
+
+                for _, file := range files {
+                    if file.IsDir() { continue; }
+
+                    fmt.Printf("%s\n", file.Name())
+                }
+
+                fmt.Printf("%s", Reset)
+
+                return;
+
+            } else if value == "-r" {
+                // flag for deleting a session 
+                session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + os.Args[i+1];
+
+                _, err := os.Stat(session_file);
+                if err == nil {
+                    err := os.Remove(session_file);
+                    if err != nil {
+                        log.Println(err)
+                    }
+                }
+
+                return;
+
+            } else if value == "-mv" {
+                // flag for renaming a session 
+                session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + os.Args[i+1];
+                new_name := os.Getenv("HOME") + "/.cache/ask-jef/" + os.Args[i+2]
+
+                if new_name == "" {
+                    log.Println(errors.New("Please provide a new name for the session!\n"))
+                    return;
+                }
+
+                _, err := os.Stat(session_file);
+                if err == nil {
+                    err := os.Rename(session_file, new_name);
+                    if err != nil {
+                        log.Println(err)
+                    }
+                }
+
+                return;
 
             } else {
                 // get input from argument
@@ -177,7 +253,7 @@ func main() {
     fmt.Printf("\r%s", v.Choices[0].Message.Content + Reset)
 
     // save result to session file
-    session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + session.Id + ".txt";
+    session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + session.Id;
 
     f_out, err := 
         os.OpenFile(session_file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0644);

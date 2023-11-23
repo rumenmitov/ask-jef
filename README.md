@@ -52,9 +52,29 @@ To enter the contents of a file you can type:
 ask -f <file_1> -f <file_2> "your query here"
 ```
   
-Each response is saved in a unique text file (referred to as a _session_) in the `$XDG_CACHE_HOME` directory.  
+Each response is saved in a unique file (referred to as a _session_) in the `$XDG_CACHE_HOME` directory.  
 To save a response under a desired session name, please enter the command:
 ```sh
 ask -s <session_name> "your query here"
 ```
-**NOTE:** The above command could also be used to continue from where you left off in a previous session.
+**NOTE:** The above command could also be used to continue from where you left off in a previous session.  
+  
+To list the available sessions:  
+```sh
+ask -l
+```
+   
+To print the results of a session:
+```sh
+ask -ss <session_name>
+```
+  
+To delete a session:
+```sh
+ask -r <session_name>
+```
+    
+To rename a session:
+```sh
+ask -mv <old_session_name> <new_session_name>
+```
