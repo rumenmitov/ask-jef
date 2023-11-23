@@ -84,7 +84,7 @@ func main() {
 
                 i++;
 
-            } else if value == "-ss" {
+            } else if value == "-cat" {
                 // flag for displaying the contents of a session
                 session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + os.Args[i+1];
 
@@ -100,7 +100,7 @@ func main() {
 
                 return;
 
-            } else if value == "-l" {
+            } else if value == "-ls" {
                 // flag for listing sessions
                 session_dir := os.Getenv("HOME") + "/.cache/ask-jef/";
 
@@ -126,7 +126,7 @@ func main() {
 
                 return;
 
-            } else if value == "-r" {
+            } else if value == "-rm" {
                 // flag for deleting a session 
                 session_file := os.Getenv("HOME") + "/.cache/ask-jef/" + os.Args[i+1];
 

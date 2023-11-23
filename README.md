@@ -11,6 +11,7 @@
 1.1 [Prerequisites](#prerequisites)  
 1.2 [Building](#building)  
 2. [Usage](#usage)  
+2.1 [Flags](#flags)
 
 </details>
 
@@ -44,22 +45,23 @@ ask
 On the _enter_ after an empty line, your multi-line query will be sent to Jef, who will
 return with a response shortly 😁.    
 
-**NOTE:** Form multi-line queries quotation marks (_""_) are not needed!  
-  
-You may also specify a desired model by typing:
+**NOTE:** Form multi-line queries quotation marks (_""_) are not needed!   
+   
+Each response is saved in a unique file (referred to as a _session_) in the `$XDG_CACHE_HOME` directory.  
+### Flags
+Set a desired model:  
 ```sh
 ask -m <model_name> "your query here"
 ```
 **NOTE:** The model name should correspond to the model in your _LocalAI/models/_ directory.  
 **NOTE:** It is also possible to set the desired model in `$XDG_CONFIG_HOME/ask-jef/ask.env`.  
   
-To enter the contents of a file you can type:  
+To submit contents of files:  
 ```sh
 ask -f <file_1> -f <file_2> "your query here"
 ```
   
-Each response is saved in a unique file (referred to as a _session_) in the `$XDG_CACHE_HOME` directory.  
-To save a response under a desired session name, please enter the command:
+To save a response under a desired session name:
 ```sh
 ask -s <session_name> "your query here"
 ```
@@ -67,17 +69,17 @@ ask -s <session_name> "your query here"
   
 To list the available sessions:  
 ```sh
-ask -l
+ask -ls
 ```
    
 To print the results of a session:
 ```sh
-ask -ss <session_name>
+ask -cat <session_name>
 ```
     
 To delete a session:
 ```sh
-ask -r <session_name>
+ask -rm <session_name>
 ```
      
 To rename a session:
