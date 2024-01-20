@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-    "errors"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
@@ -25,13 +24,13 @@ func main() {
         return;
     }
 
-
     // get user input
     session := Session {
         AlreadyExists: false,
         Id: uuid.NewString(),
         Content: "",
     }
+
     var model string = "";
     var input string = "";
     var filesArr []UserFile;
@@ -45,8 +44,20 @@ func main() {
 
             if value == "-m" {
                 // flag for setting the model
-                model = os.Args[i+1]
-                i++;
+
+                if len(os.Args) == 2 {
+
+                    model, err = selectModel();
+                    if err != nil {
+                        os.Stderr.WriteString(err.Error());
+                    }
+
+                } else {
+
+                    model = os.Args[i+1]
+                    i++;
+
+                }
 
             } else if value == "-f" {
                 // flag for adding files
@@ -57,7 +68,7 @@ func main() {
 
                 contents, err := os.ReadFile(f.Name);
                 if (err != nil) {
-                    log.Println(err)
+                    os.Stderr.WriteString(err.Error());
                 }
 
                 f.Contents = string(contents);
@@ -76,7 +87,7 @@ func main() {
 
                     contents, err := os.ReadFile(session_file);
                     if err != nil {
-                        log.Println(err)
+                        os.Stderr.WriteString(err.Error());
                     }
 
                     session.Content = string(contents);
@@ -92,7 +103,7 @@ func main() {
                 if err == nil {
                     contents, err := os.ReadFile(session_file);
                     if err != nil {
-                        log.Println(err)
+                        os.Stderr.WriteString(err.Error());
                     }
 
                     fmt.Printf("\n%s\n", B_Cyan + string(contents) + Reset)
@@ -106,12 +117,12 @@ func main() {
 
                 dir, err := os.Open(session_dir)
                 if err != nil {
-                    log.Println(err)
+                    os.Stderr.WriteString(err.Error());
                 }
 
                 files, err := dir.ReadDir(0)
                 if err != nil {
-                    log.Println(err)
+                    os.Stderr.WriteString(err.Error());
                 }
 
                 fmt.Printf("\n%s", B_Purple + "Sessions:\n\n" + I_Cyan)
@@ -134,7 +145,7 @@ func main() {
                 if err == nil {
                     err := os.Remove(session_file);
                     if err != nil {
-                        log.Println(err)
+                        os.Stderr.WriteString(err.Error());
                     }
                 }
 
@@ -146,7 +157,7 @@ func main() {
                 new_name := os.Getenv("HOME") + "/.cache/ask-jef/" + os.Args[i+2]
 
                 if new_name == "" {
-                    log.Println(errors.New("Please provide a new name for the session!\n"))
+                        os.Stderr.WriteString("Error! Please provide a new name for the session!\n");
                     return;
                 }
 
@@ -154,7 +165,7 @@ func main() {
                 if err == nil {
                     err := os.Rename(session_file, new_name);
                     if err != nil {
-                        log.Println(err)
+                        os.Stderr.WriteString(err.Error());
                     }
                 }
 
@@ -175,8 +186,11 @@ func main() {
     }
 
     if model == "" {
-        fmt.Printf("%s", B_Purple + "Enter model name (should be the same from LocalAI/models/ direcotry): " + Reset)
-        fmt.Scanf("%s", &model)
+        model, err = selectModel();
+        if err != nil {
+            os.Stderr.WriteString(err.Error());
+        }
+
     }
 
     updateModel(model);
@@ -214,12 +228,12 @@ func main() {
 
     payload_str, err := json.Marshal(payload)
     if (err != nil) {
-        log.Println(err)
+        os.Stderr.WriteString(err.Error());
     }
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload_str))
 	if err != nil {
-        log.Println(err)
+        os.Stderr.WriteString(err.Error());
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -232,7 +246,7 @@ func main() {
     resp, err := client.Do(req)
     if err != nil {
         isFinished = true
-        log.Println(err)
+        os.Stderr.WriteString(err.Error());
     }
     defer resp.Body.Close()
     isFinished = true
@@ -241,7 +255,7 @@ func main() {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-        log.Println(err)
+        os.Stderr.WriteString(err.Error());
 		return
 	}
 
@@ -258,7 +272,7 @@ func main() {
     f_out, err := 
         os.OpenFile(session_file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0644);
     if err != nil {
-        log.Println(err)
+        os.Stderr.WriteString(err.Error());
         return
     }
 
@@ -267,12 +281,12 @@ func main() {
     if session.AlreadyExists {
         _, err = f_out.WriteString("\n");
         if err != nil {
-            log.Println(err)
+            os.Stderr.WriteString(err.Error());
         }
     }
 
     _, err = f_out.WriteString(v.Choices[0].Message.Content)
     if err != nil {
-        log.Println(err)
+        os.Stderr.WriteString(err.Error());
     }
 }

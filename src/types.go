@@ -11,6 +11,16 @@ type UserFile struct {
     Contents string
 }
 
+type Model struct {
+    Id string `json:"id"`
+    Object string `json:"object"`
+}
+
+type ModelsRequest struct {
+    Object string `json:"object"`
+    Data []Model `json:"data"`
+}
+
 type Payload struct {
     Model string `json:"model"`
     Messages []Message `json:"messages"`
